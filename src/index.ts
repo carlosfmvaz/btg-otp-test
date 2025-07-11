@@ -14,11 +14,11 @@ app.get('/health-check', (req, res) => {
   res.status(200).send({ status: 'OK' });
 });
 
-app.post('/generate-otp', async (req: Request, res: Response) => {
+app.post('/otp/generate', async (req: Request, res: Response) => {
   await OTPFactory.create().generateOTP(req, res);
 });
 
-app.post('/validate-otp', async (req: Request, res: Response) => {
+app.post('/otp/validate', async (req: Request, res: Response) => {
   await OTPFactory.create().verifyOTP(req, res);
 });
 
