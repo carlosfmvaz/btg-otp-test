@@ -5,7 +5,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "ts-node src/index.ts",
-        "test": "jest --runInBand"
+        "test": "jest --runInBand --silent"
     },
     "author": "",
     "license": "ISC",

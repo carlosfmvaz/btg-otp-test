@@ -11,13 +11,24 @@ export default class ValidateOTP {
     async execute(input: Input): Promise<Output> {
         const { otp, tokenId } = input;      
         const otpData = await this.otpDAO.getById(tokenId);
-        if (!otpData) throw new Error("OTP not found or has expired");        
+        if (!otpData) {
+            return {
+                message: "Invalid tokenId",
+                isValid: false
+            };
+        }    
+        if (otpData.otp !== otp) {
+            return {
+                message: "Invalid OTP",
+                isValid: false
+            };
+        }
 
         if (otpData.expiresAt < new Date()) {
             await this.otpDAO.deleteById(tokenId);
             return {
                 message: "OTP has expired",
-                valid: false
+                isValid: false
             };
         }
 
@@ -25,14 +36,14 @@ export default class ValidateOTP {
         if (!isValid) {
             return {
                 message: "Invalid OTP",
-                valid: false
+                isValid: false
             }
         }
         const deleteResult = await this.otpDAO.deleteById(tokenId);
         if (!deleteResult) throw new Error("Failed to delete OTP after validation");
         return {
             message: "OTP validated successfully",
-            valid: true
+            isValid: true
         };
     }
 }
@@ -44,5 +55,5 @@ type Input = {
 
 type Output = {
     message: string;
-    valid: boolean;
+    isValid: boolean;
 }

@@ -26,7 +26,7 @@ it('Should generate an OTP and validation must succeeed', async () => {
         tokenId: otpCreationResult.tokenId
     });
     expect(validationResult.message).toBe("OTP validated successfully");
-    expect(validationResult.valid).toBe(true);
+    expect(validationResult.isValid).toBe(true);
 });
 
 it('Should generate an OTP and validation must fail with wrong OTP', async () => {
@@ -38,7 +38,7 @@ it('Should generate an OTP and validation must fail with wrong OTP', async () =>
         tokenId: otpCreationResult.tokenId
     });
     expect(validationResult.message).toBe("Invalid OTP");
-    expect(validationResult.valid).toBe(false);
+    expect(validationResult.isValid).toBe(false);
 });
 
 it('Should generate an OTP and validation must fail with expired OTP', async () => {
@@ -52,15 +52,17 @@ it('Should generate an OTP and validation must fail with expired OTP', async () 
         tokenId: otpCreationResult.tokenId
     });
     expect(validationResult.message).toBe("OTP has expired");
-    expect(validationResult.valid).toBe(false);
+    expect(validationResult.isValid).toBe(false);
 });
 
-it('Should throw an error if OTP is not found', async () => {
+it('Should return invalid OTP information if tokenId not found', async () => {
     const otpCreationResult = await generateOTP.execute({ expiresInSeconds: 5 });
 
     await otpMemoryDAO.deleteById(otpCreationResult.tokenId);
-    expect(validateOTP.execute({
+    const validationResult = await validateOTP.execute({
         otp: otpCreationResult.otp,
         tokenId: otpCreationResult.tokenId
-    })).rejects.toThrow("OTP not found or has expired");
+    });
+    expect(validationResult.message).toBe("Invalid tokenId");
+    expect(validationResult.isValid).toBe(false);
 });
