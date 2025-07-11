@@ -58,6 +58,8 @@ docker-compose up
 
 A API estará disponível em `http://localhost:3000`.
 
+A Documentação com Swagger estará disponível em `http://localhost:3000/api-docs`.
+
 ### Executando os Testes
 
 ```bash
