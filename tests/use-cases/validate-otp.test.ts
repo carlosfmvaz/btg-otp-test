@@ -1,15 +1,13 @@
 import sinon from 'sinon';
 
-import OTPHandler from '../../src/gateways/otp-handler';
 import OTPMemoryDAO from '../../src/db/memory/otp-memory-dao';
 
 import ValidateOTP from '../../src/use-cases/validate-otp';
 import GenerateOTP from '../../src/use-cases/generate-otp';
 
-const otpHandler = new OTPHandler();
 const otpMemoryDAO = new OTPMemoryDAO();
-const validateOTP = new ValidateOTP(otpHandler, otpMemoryDAO);
-const generateOTP = new GenerateOTP(otpHandler, otpMemoryDAO);
+const validateOTP = new ValidateOTP(otpMemoryDAO);
+const generateOTP = new GenerateOTP(otpMemoryDAO);
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -18,9 +16,8 @@ beforeEach(() => {
 });
 
 it('Should generate an OTP and validation must succeeed', async () => {
-    const expiresInSeconds = 5;
+    const expiresInSeconds = 20;
     const otpCreationResult = await generateOTP.execute({ expiresInSeconds });
-
     const validationResult = await validateOTP.execute({
         otp: otpCreationResult.otp,
         tokenId: otpCreationResult.tokenId

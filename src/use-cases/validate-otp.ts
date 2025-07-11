@@ -1,10 +1,8 @@
 import IOTP from "../db/interfaces/otp";
-import OTPHandler from "../gateways/otp-handler";
 
 export default class ValidateOTP {
     constructor(
-        readonly otpHandler: OTPHandler,
-        readonly otpDAO: IOTP,
+        readonly otpDAO: IOTP
     ) {
     }
 
@@ -32,13 +30,6 @@ export default class ValidateOTP {
             };
         }
 
-        const isValid = await this.otpHandler.validateOTP(otp, otpData.secret);
-        if (!isValid) {
-            return {
-                message: "Invalid OTP",
-                isValid: false
-            }
-        }
         const deleteResult = await this.otpDAO.deleteById(tokenId);
         if (!deleteResult) throw new Error("Failed to delete OTP after validation");
         return {

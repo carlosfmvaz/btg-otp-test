@@ -2,21 +2,17 @@ import sinon from 'sinon';
 import OTPController from '../../src/controllers/otp-controller';
 import GenerateOTP from '../../src/use-cases/generate-otp';
 import ValidateOTP from '../../src/use-cases/validate-otp';
-import OTPHandler from '../../src/gateways/otp-handler';
 import OTPMemory from '../../src/db/memory/otp-memory-dao';
 
 beforeEach(() => {
     sinon.restore();
 });
 
-const otpHandler = new OTPHandler();
 const otpDAO = new OTPMemory();
 const generateOtpUseCase = new GenerateOTP(
-    otpHandler,
     otpDAO
 );
 const validateOtpUseCase = new ValidateOTP(
-    otpHandler,
     otpDAO
 );
 const otp_controller = new OTPController(
