@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: OTP Generation API
+  version: 1.0.0
+  description: API para geração e validação de OTPs.
+servers:
+  - url: http://localhost:3000
+paths:
+  /health-check:
+    get:
+      summary: Verifica o status da API
+      responses:
+        '200':
+          description: API está saudável
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+  /otp/generate:
+    post:
+      summary: Gera um novo OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expiresInSeconds:
+                  type: integer
+                  example: 60
+      responses:
+        '200':
+          description: OTP gerado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateOTPResponse'
+        '400':
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /otp/validate:
+    post:
+      summary: Valida um OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tokenId:
+                  type: string
+                  example: "0f0dfead-4e92-4ccc-98c9-1e7608da8ed6"
+                otp:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: OTP validado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateOTPResponse'
+        '400':
+          description: OTP inválido ou erro de validação
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidateOTPResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    GenerateOTPResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: OTP generated successfully
+        data:
+          type: object
+          properties:
+            otp:
+              type: string
+              example: "123456"
+            tokenId:
+              type: string
+              example: "0f0dfead-4e92-4ccc-98c9-1e7608da8ed6" 
+            expiresAt:
+              type: string
+              format: date-time
+              example: "2025-07-11T19:50:00.000Z"
+    ValidateOTPResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: OTP is valid
+        isValid:
+          type: boolean
+          example: true
+    InvalidOTPResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invalid OTP
+        isValid:
+          type: boolean
+          example: false
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid expiresInSeconds value
